@@ -1,35 +1,39 @@
 package org.usfirst.frc.team2506.robot;
 
-
+// Imports math fuctions
 import java.math.*;
-
+// Imports Gyro Class
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 
 public class SwerveDrive {
+	// Defines the factor by which speed will be limited
 	public static final double DEFAULT_SPEED_MULTIPLIER = 0.6;
 	public SwerveDrive () {
 		
 	}
-	
+	// Defines length and width of the chassis
 	public final double L = 24;
 	public final double W = 26;
 	
-	private int clock = 0;
-	
+	// Define wheel variables
 	WheelDrive frontRight;
 	WheelDrive backRight;
 	WheelDrive frontLeft;
 	WheelDrive backLeft;
-	
+
 	public SwerveDrive (WheelDrive frontRight, WheelDrive backRight, WheelDrive frontLeft, WheelDrive backLeft) {
 		this.frontRight = frontRight;
 		this.backRight = backRight;
 		this.frontLeft = frontLeft;
 		this.backLeft = backLeft;
 	}
+	
+	// Drives with a default speed controller
 	public void drive (ADXRS450_Gyro gyro, double y1, double x1, double x2) {
+		
 		drive (gyro, y1, x1, x2, DEFAULT_SPEED_MULTIPLIER);
 	}
+	//Drives with a custom speed controllor (uses added argument)
 	public void drive (ADXRS450_Gyro gyro, double y1, double x1, double x2, double multiplier) {
 		double[] rotatedInputs = rotateInputs(x1, y1, (gyro.getAngle() % 360) - 270 );
 		x1 = rotatedInputs[0];
@@ -37,12 +41,13 @@ public class SwerveDrive {
 		_drive(squareAxis(x1) * multiplier, -squareAxis(y1) * multiplier, -squareAxis(x2) * multiplier);
 	}
 	
+	//does actual driving function
 	private void _drive (double y1, double x1, double x2) {
-		clock++;
 		y1 *= -1;
 		
 		double R = Math.sqrt(L * L + W * W);
 		
+		//creates variables to be used in later calculations for speed and angles
 		double a = x1 - x2 * (L / R);
 		double b = x1 + x2 * (L / R);
 		double c = y1 - x2 * (W / R);
@@ -67,6 +72,7 @@ public class SwerveDrive {
 		backLeft.drive (wa4, -ws4);
 	}
 	
+	// creates method to make i have your computeraxis used for custom speed controller
 	private double squareAxis(double axis) {
 		return axis * axis * Math.signum(axis);
 	}
